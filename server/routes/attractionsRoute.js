@@ -3,6 +3,7 @@ import { Attraction } from '../models/attractionModel.js';
 
 const router = express.Router();
 
+/*
 router.get('/', async (req, res) => {
   try {
     const attractions = await Attraction.find({});
@@ -15,7 +16,7 @@ router.get('/', async (req, res) => {
     console.log(err.message);
     res.status(500).send({ message : err.message });
   }
-});
+});*/
 
 router.get('/:id', async (req, res) => {
   try {
@@ -27,6 +28,23 @@ router.get('/:id', async (req, res) => {
       return res.status(404).send('Attraction not found');
     }
     return res.status(200).json(attraction);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send({ message : err.message });
+  }
+});
+
+router.get('/', async (req, res) => {
+  try {
+    const count = await Attraction.countDocuments();
+    const randomIndex = Math.floor(Math.random() * count);
+    const randomAttraction = await Attraction.findOne().skip(randomIndex);
+    if (!randomAttraction) {
+      return res.status(404).send('Attraction not found');
+    } else {
+      console.log(randomAttraction)
+    }
+    return res.status(200).json(randomAttraction);
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ message : err.message });
