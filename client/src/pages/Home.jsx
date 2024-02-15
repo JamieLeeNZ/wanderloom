@@ -28,9 +28,6 @@ const Home = () => {
     <div className='p-4'>
       <div className='flex justify-between items-center'>
         <h1 className='text-3xl font-bold my-8'>Attractions</h1>
-        <Link to='/attractions/add' className='flex items-center justify-center w-12 h-12 bg-sky-800 text-white rounded-full'>
-          <MdOutlineAddBox size={24} />
-        </Link>
       </div>
       {loading ? (
         <Spinner />
@@ -40,7 +37,7 @@ const Home = () => {
             <li key={attraction._id}>
               <h2 className='text-xl font-semibold'>{attraction.name}</h2>
               <p>{attraction.description}</p>
-              {/* Add more details to display */}
+              {}
             </li>
           ))}
         </ul>
