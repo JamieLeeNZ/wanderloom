@@ -69,7 +69,7 @@ const Random = () => {
           <div key={attraction._id} className="border border-gray-200 rounded p-4 my-10">
               <div className="flex flex-col justify-center items-center mt-4">
                 <h2 className="text-xl font-semibold">{attraction.name}</h2>
-                <p className="text-gray-600 mt-3">{attraction.district}, {randomAttraction.ward}</p>
+                <p className="text-gray-600 mt-3">{attraction.district}, {attraction.ward}</p>
               </div>
               <div className="flex justify-center items-center mt-4">
                 <img
