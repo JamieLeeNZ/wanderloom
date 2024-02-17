@@ -20,21 +20,6 @@ router.get('/', async (req, res) => {
   }
 });*/
 
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const attraction = await Attraction.findById(id);
-    
-    if (!attraction) {
-      return res.status(404).send('Attraction not found');
-    }
-    return res.status(200).json(attraction);
-  } catch (err) {
-    console.log(err.message);
-    res.status(500).send({ message : err.message });
-  }
-});
 
 router.get('/', async (req, res) => {
   try {
@@ -52,6 +37,18 @@ router.get('/', async (req, res) => {
     res.status(500).send({ message : err.message });
   }
 });
+
+
+router.get('/popular', async (req, res) => {
+  try {
+    const attractions = await Attraction.find({}).sort({ rating: -1 }).limit(20);
+    return res.status(200).json(attractions);
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).send({ message : err.message });
+  }
+}
+);
 
 router.get('/closest/:id', async (req, res) => {
   try {
@@ -98,5 +95,6 @@ router.get('/closest/:id', async (req, res) => {
     res.status(500).send({ message : err.message });
   }
 });
+
 
 export default router;
