@@ -21,12 +21,7 @@ const Select = () => {
 
   // Chooses two random attractions from the popular attractions list
   const getAttractionChoices = () => {
-    // If there are less than two attractions, return
-    if (popularAttractions.length < 2) {
-      getPopularAttractions();
-      return;
-    }
-
+    console.log(popularAttractions.length);
     const randomIndex1 = Math.floor(Math.random() * popularAttractions.length);
     let randomIndex2;
     do {
@@ -59,6 +54,7 @@ const Select = () => {
     if (disableClick) return;
     setDisableClick(true);
     setSelectedAttractions(prevAttractions => [...prevAttractions, attraction]);
+
     setTimeout(() => {
       if (selectedAttractions.length < 5) {
         getAttractionChoices();
@@ -77,6 +73,7 @@ const Select = () => {
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
         onClick={() => {
+          getPopularAttractions();
           getAttractionChoices(); 
           setSelectedAttractions([]);
         }}
