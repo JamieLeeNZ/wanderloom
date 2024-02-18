@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Select = () => {
   const [popularAttractions, setPopularAttractions] = useState([]);
@@ -7,7 +8,8 @@ const Select = () => {
   const [selectedAttractions, setSelectedAttractions] = useState([]);
   const [fadeIn, setFadeIn] = useState(false);
   const [disableClick, setDisableClick] = useState(false);
-
+  const navigate = useNavigate();
+  
   // Fetches popular attractions from the backend
   const fetchPopularAttractions = async () => {
     try {
@@ -22,13 +24,25 @@ const Select = () => {
   // Chooses two random attractions from the popular attractions list
   const getAttractionChoices = () => {
     console.log(popularAttractions.length);
-    const randomIndex1 = Math.floor(Math.random() * popularAttractions.length);
+    
+    const filteredPopularAttractions = popularAttractions.filter(attraction => (
+      !selectedAttractions.some(selected => selected._id === attraction._id)
+    ));
+    const randomIndex1 = Math.floor(Math.random() * filteredPopularAttractions.length);
     let randomIndex2;
     do {
-      randomIndex2 = Math.floor(Math.random() * popularAttractions.length);
+      randomIndex2 = Math.floor(Math.random() * filteredPopularAttractions.length);
     } while (randomIndex2 === randomIndex1);
 
-    setAttractionChoices([popularAttractions[randomIndex1], popularAttractions[randomIndex2]]);
+    console.log('Attraction Choices:', [
+      filteredPopularAttractions[randomIndex1].name,
+      filteredPopularAttractions[randomIndex2].name
+    ]);
+
+    setAttractionChoices([
+      filteredPopularAttractions[randomIndex1],
+      filteredPopularAttractions[randomIndex2]
+    ]);
 
     setPopularAttractions(prevAttractions => {
       const updatedAttractions = [...prevAttractions];
@@ -67,13 +81,22 @@ const Select = () => {
     }, 200);
   };
 
+  // Redirect to the itinerary page when the selected attractions reach a certain length
+  useEffect(() => {
+    if (selectedAttractions.length === 5) {
+      navigate('/itinerary', { state: { selectedAttractions } });
+    }
+  }, [selectedAttractions, navigate]);
+
   return (
     <div className="flex flex-col justify-center items-center">
       <h2>Popular Attractions</h2>
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
         onClick={() => {
-          getPopularAttractions();
+          if (popularAttractions.length < 20) {
+            getPopularAttractions();
+          }
           getAttractionChoices(); 
           setSelectedAttractions([]);
         }}
@@ -105,25 +128,6 @@ const Select = () => {
             </ul>
         </div>
       )}
-      <div className={`max-w-2xl w-3/4 gap-4 mt-4 transition-opacity duration-1000 ${selectedAttractions.length === 5 ? 'opacity-100' : 'opacity-0'}`}>
-        {selectedAttractions.map(attraction => (
-          <div key={attraction._id} className="border border-gray-200 rounded p-4 my-10">
-            <div className="flex flex-col justify-center items-center mt-4">
-              <h2 className="text-xl font-semibold">{attraction.name}</h2>
-              <p className="text-gray-600 mt-3">{attraction.district}, {attraction.ward}</p>
-            </div>
-            <div className="flex justify-center items-center mt-4">
-              <img
-                src={attraction.image}
-                alt={attraction.name}
-                className="mt-4 w-full h-auto rounded-lg"
-                style={{ width: 480, height: 360 }}
-              />
-            </div>
-            <p className="text-gray-600 px-8 my-6">{attraction.description}</p>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };
