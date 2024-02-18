@@ -12,8 +12,10 @@ const Itinerary = () => {
       const response = await axios.get(`http://localhost:5555/attractions/closest/${attractionId}`);
       let closestAttractions = response.data;
 
+      console.log('Closest attractions:', closestAttractions);
+
       // Filter out attractions that are already included in other itineraries
-      closestAttractions = closestAttractions.filter(attraction => !selectedAttractionsIds.includes(attraction._id));
+      closestAttractions = closestAttractions.filter(attraction => !selectedAttractionsIds.includes(attraction._id)).splice(0, 3);
 
       return closestAttractions;
     } catch (error) {

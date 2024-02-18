@@ -73,7 +73,7 @@ router.get('/closest/:id', async (req, res) => {
           },
           { _id: { $ne: attraction._id } } // Exclude the selected attraction itself
       ]
-  });
+    });
 
     // Calculate proximity to the given attraction for all attractions
     const attractionsWithProximity = attractions.map(otherAttraction => ({
@@ -81,13 +81,30 @@ router.get('/closest/:id', async (req, res) => {
         proximity: calculateProximity(attraction, otherAttraction)
     }));
     
+    const sortedAttractions = attractionsWithProximity.sort((a, b) => a.proximity - b.proximity);
     
-    // Sort attractions by proximity and get the three closest
-    const closestAttractions = attractionsWithProximity
-      .sort((a, b) => a.proximity - b.proximity)
-      .slice(0, 3);
-    
-    console.log('Attractions Array:', closestAttractions);
+    let closestAttractions = [];
+
+    // Check if the main attraction has one category or an array of categories
+    const mainCategories = Array.isArray(attraction.category) ? attraction.category : [attraction.category];
+
+    // Push attractions with matching categories to the beginning of the array
+    for (const attr of sortedAttractions) {
+      // Check if the closest attraction shares at least one category with the main attraction
+      const closestCategories = Array.isArray(attr.category) ? attr.category : [attr.category];
+      const hasMatchingCategory = mainCategories.some(category => closestCategories.includes(category));
+
+      if (hasMatchingCategory) {
+        closestAttractions.push(attr);
+      }
+    }
+
+    // Append the rest of the attractions
+    for (const attr of sortedAttractions) {
+      if (!closestAttractions.includes(attr)) {
+        closestAttractions.push(attr);
+      }
+    }
 
     return res.status(200).json(closestAttractions);
   } catch (err) {
