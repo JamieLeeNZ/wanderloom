@@ -23,31 +23,26 @@ const Select = () => {
 
   // Chooses two random attractions from the popular attractions list
   const getAttractionChoices = () => {
-    console.log(popularAttractions.length);
-    
-    const filteredPopularAttractions = popularAttractions.filter(attraction => (
-      !selectedAttractions.some(selected => selected._id === attraction._id)
-    ));
-    const randomIndex1 = Math.floor(Math.random() * filteredPopularAttractions.length);
-    let randomIndex2;
-    do {
-      randomIndex2 = Math.floor(Math.random() * filteredPopularAttractions.length);
-    } while (randomIndex2 === randomIndex1);
-
-    console.log('Attraction Choices:', [
-      filteredPopularAttractions[randomIndex1].name,
-      filteredPopularAttractions[randomIndex2].name
-    ]);
-
-    setAttractionChoices([
-      filteredPopularAttractions[randomIndex1],
-      filteredPopularAttractions[randomIndex2]
-    ]);
-
+    console.log('Popular Attractions:', popularAttractions);
+    // Check if there are at least two attractions in the popular attractions array
+    if (popularAttractions.length < 2) {
+      console.error('Not enough attractions available.');
+      return;
+    }
+  
+    // Get the last two attractions from the popular attractions array
+    const attraction1 = popularAttractions[popularAttractions.length - 1];
+    const attraction2 = popularAttractions[popularAttractions.length - 2];
+  
+    // Log attraction choices
+    console.log('Attraction Choices:', [attraction1.name, attraction2.name]);
+  
+    // Set attraction choices state
+    setAttractionChoices([attraction1, attraction2]);
+  
+    // Remove the last two attractions from the popular attractions array
     setPopularAttractions(prevAttractions => {
-      const updatedAttractions = [...prevAttractions];
-      updatedAttractions.splice(randomIndex1, 1);
-      updatedAttractions.splice(randomIndex2 > randomIndex1 ? randomIndex2 - 1 : randomIndex2, 1);
+      const updatedAttractions = prevAttractions.slice(0, -2);
       return updatedAttractions;
     });
   };
@@ -94,7 +89,7 @@ const Select = () => {
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
         onClick={() => {
-          if (popularAttractions.length < 20) {
+          if (popularAttractions.length < 12) {
             getPopularAttractions();
           }
           getAttractionChoices(); 
