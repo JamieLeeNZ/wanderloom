@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 
-const Itinerary = () => {
+const Itinerary = ({selectedCategories}) => {
   const [itineraries, setItineraries] = useState([]);
   const location = useLocation();
   const selectedAttractions = location.state?.selectedAttractions || [];
@@ -14,8 +14,15 @@ const Itinerary = () => {
 
       console.log('Closest attractions:', closestAttractions);
 
+      // Filter out attractions that are not in the selected categories
+      closestAttractions = closestAttractions.filter(attraction =>
+        selectedCategories.includes(attraction.category)
+      );
+
       // Filter out attractions that are already included in other itineraries
-      closestAttractions = closestAttractions.filter(attraction => !selectedAttractionsIds.includes(attraction._id)).splice(0, 3);
+      closestAttractions = closestAttractions.filter(attraction => 
+        !selectedAttractionsIds.includes(attraction._id)
+      ).splice(0, 3);
 
       return closestAttractions;
     } catch (error) {
