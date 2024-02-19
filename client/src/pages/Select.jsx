@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import FilterBoard from '../components/Filterboard';
+import PreferencesForm from '../components/PreferencesForm';
 
-const Select = ({selectedCategories, setSelectedCategories }) => {
+const Select = ({selectedCategories, setSelectedCategories, selectedPreferences, setSelectedPreferences}) => {
   const [popularAttractions, setPopularAttractions] = useState([]);
   const [attractionChoices, setAttractionChoices] = useState([]);
   const [selectedAttractions, setSelectedAttractions] = useState([]);
@@ -88,10 +89,19 @@ const Select = ({selectedCategories, setSelectedCategories }) => {
     setSelectedCategories(categories);
   };
 
+  const handlePreferenceChange = (preferences) => {
+    setSelectedPreferences(preferences);
+  };
+
   return (
     <div className="flex flex-col justify-center items-center">
       <h2>Popular Attractions</h2>
       <FilterBoard categories={selectedCategories} onFilterChange={handleFilterChange} />
+      <PreferencesForm 
+        categories={selectedCategories}
+        preferences={selectedPreferences} 
+        onPreferencesChange={handlePreferenceChange} 
+      />
       <button
         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
         onClick={() => {
@@ -104,6 +114,14 @@ const Select = ({selectedCategories, setSelectedCategories }) => {
       >
         Select Two Attractions
       </button>
+      <div>
+        <h3>Selected Preferences:</h3>
+        <ul>
+          {Object.entries(selectedPreferences).map(([category, value]) => (
+            <li key={category}>{category}: {value}</li>
+          ))}
+        </ul>
+      </div>
       {attractionChoices.length > 0 && selectedAttractions.length < 5 && (
         <div className="flex justify-center items-center h-screen">
           <ul className="flex space-x-4">
