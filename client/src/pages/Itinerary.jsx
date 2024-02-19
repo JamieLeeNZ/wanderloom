@@ -2,34 +2,44 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 
-const Itinerary = ({selectedCategories}) => {
+const Itinerary = ({selectedCategories, selectedPreferences }) => {
   const [itineraries, setItineraries] = useState([]);
   const location = useLocation();
   const selectedAttractions = location.state?.selectedAttractions || [];
 
-  const fetchClosestAttractions = async (attractionId, selectedAttractionsIds) => {
+  const fetchClosestAttractions = async (attractionId, selectedAttractionsIds, selectedCategories, selectedPreferences) => {
     try {
-      const response = await axios.get(`http://localhost:5555/attractions/closest/${attractionId}`);
-      let closestAttractions = response.data;
+        // Fetch closest attractions
+        const response = await axios.get(`http://localhost:5555/attractions/closest/${attractionId}`);
+        let closestAttractions = response.data;
 
-      console.log('Closest attractions:', closestAttractions);
+        console.log("Preferences: ", selectedPreferences);
 
-      // Filter out attractions that are not in the selected categories
-      closestAttractions = closestAttractions.filter(attraction =>
-        selectedCategories.includes(attraction.category)
-      );
+        // Sort categories based on selectedPreferences
+        closestAttractions.sort((a, b) => {
+            const categoryA = Array.isArray(a.category) ? a.category[0] : a.category;
+            const categoryB = Array.isArray(b.category) ? b.category[0] : b.category;
+            return (selectedPreferences[categoryA] || 0) - (selectedPreferences[categoryB] || 0);
+        });
 
-      // Filter out attractions that are already included in other itineraries
-      closestAttractions = closestAttractions.filter(attraction => 
-        !selectedAttractionsIds.includes(attraction._id)
-      ).splice(0, 3);
+        // Filter out attractions that are already included in other itineraries
+        closestAttractions = closestAttractions.filter(attraction =>
+            !selectedAttractionsIds.includes(attraction._id)
+        );
 
-      return closestAttractions;
+        console.log('Closest attractions:', closestAttractions);
+
+        return closestAttractions.slice(0, 3); 
     } catch (error) {
-      console.error('Error fetching closest attractions:', error);
-      return [];
+        console.error('Error fetching closest attractions:', error);
+        return [];
     }
   };
+  
+  
+
+
+  
 
   const generateItineraries = async () => {
     console.log('Selected attractions:', selectedAttractions);
@@ -38,7 +48,7 @@ const Itinerary = ({selectedCategories}) => {
     const generatedItineraries = [];
     for (const attraction of selectedAttractions) {
       try {
-        const closestAttractions = await fetchClosestAttractions(attraction._id, selectedAttractionsIds);
+        const closestAttractions = await fetchClosestAttractions(attraction._id, selectedAttractionsIds, selectedCategories, selectedPreferences);
         
         // Include the selected attraction in the itinerary
         const itinerary = [attraction, ...closestAttractions];

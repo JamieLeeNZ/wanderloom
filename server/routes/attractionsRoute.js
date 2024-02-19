@@ -109,30 +109,7 @@ router.get('/closest/:id', async (req, res) => {
     // Randomize the array before sorting
     const shuffledAttractions = shuffleArray(attractionsWithProximity);
 
-    const sortedAttractions = shuffledAttractions.sort((a, b) => a.proximity - b.proximity);
-    
-    let closestAttractions = [];
-
-    // Check if the main attraction has one category or an array of categories
-    const mainCategories = Array.isArray(attraction.category) ? attraction.category : [attraction.category];
-
-    // Push attractions with matching categories to the beginning of the array
-    for (const attr of sortedAttractions) {
-      // Check if the closest attraction shares at least one category with the main attraction
-      const closestCategories = Array.isArray(attr.category) ? attr.category : [attr.category];
-      const hasMatchingCategory = mainCategories.some(category => closestCategories.includes(category));
-
-      if (hasMatchingCategory) {
-        closestAttractions.push(attr);
-      }
-    }
-
-    // Append the rest of the attractions
-    for (const attr of sortedAttractions) {
-      if (!closestAttractions.includes(attr)) {
-        closestAttractions.push(attr);
-      }
-    }
+    const closestAttractions = shuffledAttractions.sort((a, b) => a.proximity - b.proximity);
 
     return res.status(200).json(closestAttractions);
   } catch (err) {
