@@ -41,14 +41,30 @@ router.get('/', async (req, res) => {
 
 router.get('/popular', async (req, res) => {
   try {
-    const attractions = await Attraction.find({}).sort({ rating: -1 }).limit(20);
-    return res.status(200).json(attractions);
+    // Fetch 40 attractions sorted by rating
+    const attractions = await Attraction.find({}).sort({ rating: -1 }).limit(40);
+
+    // Shuffle the attractions array randomly
+    const shuffledAttractions = shuffleArray(attractions);
+
+    // Create a Set to store unique wards
+    const uniqueWards = new Set();
+
+    // Filter attractions to include only those with unique wards and limit to 12 attractions
+    const filteredAttractions = shuffledAttractions.filter(attraction => {
+      if (!uniqueWards.has(attraction.ward)) {
+        uniqueWards.add(attraction.ward);
+        return true;
+      }
+      return false;
+    }).slice(0, 12);
+
+    return res.status(200).json(filteredAttractions);
   } catch (err) {
     console.log(err.message);
     res.status(500).send({ message : err.message });
   }
-}
-);
+});
 
 router.get('/closest/:id', async (req, res) => {
   try {
@@ -73,7 +89,7 @@ router.get('/closest/:id', async (req, res) => {
           },
           { _id: { $ne: attraction._id } } // Exclude the selected attraction itself
       ]
-  });
+    });
 
     // Calculate proximity to the given attraction for all attractions
     const attractionsWithProximity = attractions.map(otherAttraction => ({
@@ -81,13 +97,19 @@ router.get('/closest/:id', async (req, res) => {
         proximity: calculateProximity(attraction, otherAttraction)
     }));
     
-    
-    // Sort attractions by proximity and get the three closest
-    const closestAttractions = attractionsWithProximity
-      .sort((a, b) => a.proximity - b.proximity)
-      .slice(0, 3);
-    
-    console.log('Attractions Array:', closestAttractions);
+    // Shuffle function to randomize the array order
+    const shuffleArray = (array) => {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    };
+
+    // Randomize the array before sorting
+    const shuffledAttractions = shuffleArray(attractionsWithProximity);
+
+    const closestAttractions = shuffledAttractions.sort((a, b) => a.proximity - b.proximity);
 
     return res.status(200).json(closestAttractions);
   } catch (err) {
@@ -95,6 +117,15 @@ router.get('/closest/:id', async (req, res) => {
     res.status(500).send({ message : err.message });
   }
 });
+
+// Function to shuffle an array randomly
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
 
 
 export default router;
