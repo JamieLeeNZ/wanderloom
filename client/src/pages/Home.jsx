@@ -15,8 +15,9 @@ const Home = () => {
 
   const fetchRandomAttraction = async () => {
     try {
-      const response = await axios.get('http://localhost:5555/attractions');
+      const response = await axios.get('http://localhost:5555/attractions/splash');
       setRandomAttraction(response.data); 
+      console.log('Random Attraction:', response.data);
     } catch (error) {
       console.error('Error fetching random attraction:', error);
     }

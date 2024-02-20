@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { FaHome, FaInfoCircle, FaHeart } from 'react-icons/fa';
 
 const NavBar = () => {
   return (
@@ -13,14 +14,17 @@ const NavBar = () => {
           </div>
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
-              <Link to="/" className="text-black hover:text-gray-700">
-                Home
+              <Link to="/" className="text-black hover:text-gray-700 flex items-center">
+                <div className="mr-2">Home</div>
+                <div className="mr-4"><FaHome /></div>
               </Link>
-              <Link to="/about" className="text-black hover:text-gray-700">
-                About
+              <Link to="/about" className="text-black hover:text-gray-700 flex items-center">
+                <div className="mr-2">About</div>
+                <div className="mr-4"><FaInfoCircle /></div>
               </Link>
-              <Link to="/favourites" className="text-black hover:text-gray-700">
-                Favourites
+              <Link to="/favourites" className="text-black hover:text-gray-700 flex items-center">
+                <div className="mr-2">Favorites</div>
+                <div className="mr-4"><FaHeart /></div>
               </Link>
             </div>
           </div>
