@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Routes, Route} from "react-router-dom";
+import NavBar from "./components/NavBar"; 
 import Select from "./pages/Select";
 import Itinerary from "./pages/Itinerary";
+import Home from "./pages/Home";
 
 const App = () => {
   const [selectedCategories, setSelectedCategories] = useState(['Landmarks', 'Cultural', 'Nature', 'Recreational']); 
@@ -14,15 +16,19 @@ const App = () => {
   
 
   return (
-    <Routes>
-      <Route path="/" element={<Select 
-        selectedCategories={selectedCategories} 
-        setSelectedCategories={setSelectedCategories}
-        selectedPreferences={selectedPreferences} 
-        setSelectedPreferences={setSelectedPreferences} 
-      />} />
-      <Route path="/itinerary" element={<Itinerary selectedCategories={selectedCategories} selectedPreferences={selectedPreferences}/>} />
-    </Routes>
+    <div>
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/start" element={<Select 
+          selectedCategories={selectedCategories} 
+          setSelectedCategories={setSelectedCategories}
+          selectedPreferences={selectedPreferences} 
+          setSelectedPreferences={setSelectedPreferences} 
+        />} />
+        <Route path="/itinerary" element={<Itinerary selectedCategories={selectedCategories} selectedPreferences={selectedPreferences}/>} />
+      </Routes>
+    </div>
   );
 }
 

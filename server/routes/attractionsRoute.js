@@ -39,6 +39,28 @@ router.get('/', async (req, res) => {
 });
 
 
+router.get('/splash', async (req, res) => {
+  try {
+    const idsToSearch = [8,9,17,20,28,30,39,49,54,55,57,67,69,79];
+    
+    const attractions = await Attraction.find({ _id: { $in: idsToSearch } });
+
+    if (attractions.length === 0) {
+      return res.status(404).send('No attractions found');
+    }
+    
+    const randomIndex = Math.floor(Math.random() * attractions.length);
+    const randomAttraction = attractions[randomIndex];
+
+    return res.status(200).json(randomAttraction);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send({ message: err.message });
+  }
+});
+
+
+
 router.get('/popular', async (req, res) => {
   try {
     // Fetch 40 attractions sorted by rating
